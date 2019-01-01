@@ -31,7 +31,7 @@ class ToDoItem(Base):
         return {
             'title': self.title,
             'id': self.id,
-            'userId': self.user_id,
+            'userId': self.userId,
             'completed': self.completed
         }
 
