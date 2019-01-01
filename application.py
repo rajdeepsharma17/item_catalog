@@ -187,13 +187,13 @@ def gdisconnect():
 @app.route('/todo/<int:todo_id>/JSON')
 def todoMenuJSON(todo_id):
     todo = session.query(ToDoItem).filter_by(id=todo_id).one()
-    return jsonify(MenuItems=todo.serialize)
+    return jsonify(ToDo=todo.serialize)
 
 
 @app.route('/todo/JSON')
 def todosJSON():
     todos = session.query(ToDoItem).all()
-    return jsonify(todos=[r.serialize for r in todos])
+    return jsonify(Todos=[r.serialize for r in todos])
 
 
 # Show all todos
@@ -215,14 +215,16 @@ def newtodo():
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        newtodo = todo(
-            name=request.form['name'], user_id=login_session['user_id'])
+        newtodo = ToDoItem(
+            title=request.form['title'], userId=login_session['user_id'], completed=request.form['completed'])
         session.add(newtodo)
-        flash('New todo %s Successfully Created' % newtodo.name)
+        flash('New todo %s Successfully Created' % newtodo.title)
         session.commit()
         return redirect(url_for('showtodos'))
     else:
-        return render_template('newtodo.html')
+        # return render_template('newtodo.html')
+        return "Page for creating new TODOs"
+
 
 # Edit a todo
 
@@ -230,32 +232,33 @@ def newtodo():
 @app.route('/todo/<int:todo_id>/edit/', methods=['GET', 'POST'])
 def edittodo(todo_id):
     editedtodo = session.query(
-        todo).filter_by(id=todo_id).one()
-    if 'username' not in login_session:
-        return redirect('/login')
-    if editedtodo.user_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to edit this todo. Please create your own todo in order to edit.');}</script><body onload='myFunction()''>"
-    if request.method == 'POST':
-        if request.form['name']:
-            editedtodo.name = request.form['name']
-            flash('todo Successfully Edited %s' % editedtodo.name)
-            return redirect(url_for('showtodos'))
-    else:
-        return render_template('edittodo.html', todo=editedtodo)
+        ToDoItem).filter_by(id=todo_id).one()
+    # if 'username' not in login_session:
+    #     return redirect('/login')
+    # if editedtodo.user_id != login_session['user_id']:
+    #     return "<script>function myFunction() {alert('You are not authorized to edit this todo. Please create your own todo in order to edit.');}</script><body onload='myFunction()''>"
+    # if request.method == 'POST':
+    #     if request.form['title']:
+    #         editedtodo.title = request.form['title']
+    #         flash('todo Successfully Edited %s' % editedtodo.title)
+    #         return redirect(url_for('showtodos'))
+    # else:
+        # return render_template('edittodo.html', todo=editedtodo)
+    return jsonify(ToDo=editedtodo.serialize)
 
 
 # Delete a todo
 @app.route('/todo/<int:todo_id>/delete/', methods=['GET', 'POST'])
 def deletetodo(todo_id):
     todoToDelete = session.query(
-        todo).filter_by(id=todo_id).one()
+        ToDoItem).filter_by(id=todo_id).one()
     if 'username' not in login_session:
         return redirect('/login')
     if todoToDelete.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized to delete this todo. Please create your own todo in order to delete.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
         session.delete(todoToDelete)
-        flash('%s Successfully Deleted' % todoToDelete.name)
+        flash('%s Successfully Deleted' % todoToDelete.title)
         session.commit()
         return redirect(url_for('showtodos', todo_id=todo_id))
     else:
