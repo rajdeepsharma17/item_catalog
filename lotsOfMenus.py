@@ -22,12 +22,14 @@ session = DBSession()
 
 
 # Create dummy user
-User1 = User(name="Robo Barista", email="tinnyTim@udacity.com",
-             picture='https://pbs.twimg.com/profile_images/2671170543/18debd694829ed78203a5a36dd364160_400x400.png')
-session.add(User1)
-session.commit()
+def getUsers():
+    res = requests.get('https://jsonplaceholder.typicode.com/users')
+    for item in res.json():
+        user = User(name=item['name'], email=item['email'], picture="")
+        session.add(user)
+        session.commit()
 
-
+#ADD dummy Todos
 def getData():
     res = requests.get('https://jsonplaceholder.typicode.com/todos')
     for item in res.json():
@@ -36,5 +38,8 @@ def getData():
         session.commit()
 
 
-getData()
+if __name__=='__main__':
+    getUsers()
+    getData()
+
 
