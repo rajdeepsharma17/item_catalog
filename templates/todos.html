@@ -42,7 +42,7 @@
 		<div class="col-md-1"></div>
 	</div>
 	{% for todo in todos %}
-		<a href = "{{url_for('showtodos')}}">
+		<a href = "{{url_for('edittodo', todo_id=todo.id)}}">
 			<div class="row">
 				<div class="col-md-1"></div>
 					<div class="col-md-10 todo-list">

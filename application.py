@@ -240,6 +240,7 @@ def edittodo(todo_id):
     if request.method == 'POST':
         if request.form['title']:
             editedtodo.title = request.form['title']
+            editedtodo.completed=request.form['completed']
             flash('todo Successfully Edited %s' % editedtodo.title)
             return redirect(url_for('showtodos'))
     else:
