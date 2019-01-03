@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# # -*- coding: utf-8 -*-
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -13,7 +15,6 @@ class User(Base):
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
     picture = Column(String(250))
-
 
 
 class ToDoItem(Base):

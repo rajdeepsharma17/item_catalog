@@ -1,9 +1,11 @@
+#!/usr/bin/python
+# # -*- coding: utf-8 -*-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 import requests
 
-from database_setup import  Base, ToDoItem, User
+from database_setup import Base, ToDoItem, User
 
 engine = create_engine('sqlite:///todo.db')
 # Bind the engine to the metadata of the Base class so that the
@@ -29,17 +31,18 @@ def getUsers():
         session.add(user)
         session.commit()
 
-#ADD dummy Todos
+
+# ADD dummy Todos
 def getData():
     res = requests.get('https://jsonplaceholder.typicode.com/todos')
     for item in res.json():
-        todo = ToDoItem(title=item['title'], userId=item['userId'], completed=item['completed'])
+        todo = ToDoItem(title=item['title'],
+                        userId=item['userId'],
+                        completed=item['completed'])
         session.add(todo)
         session.commit()
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     getUsers()
     getData()
-
-
