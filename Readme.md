@@ -23,8 +23,11 @@ This project assumes you have `Flask` installed.
 `$ python application.py`
 
 > Creating a new Todo:
+
 ![Create](https://github.com/rajdeepsharma17/item_catalog/blob/master/static/create.png)
 > Editing an existing Todo: 
+
 ![Edit](https://github.com/rajdeepsharma17/item_catalog/blob/master/static/edit.png)
 > Deleting a Todo:
+
 ![Delete](https://github.com/rajdeepsharma17/item_catalog/blob/master/static/delete.png)
