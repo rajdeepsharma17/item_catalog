@@ -98,13 +98,6 @@ h3 {
 .divider.green {
 	background-color: #9FB80A;
 }
-.banner.main {
-	height: 150px;
-	background: url("/static/top-banner.jpg");
-	background-position: right;
-	background-repeat: no-repeat;
-	background-size: cover;
-}
 .banner.menu {
 	height: 150px;
 	background-color: #E1E17F;
