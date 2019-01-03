@@ -218,7 +218,7 @@ def gdisconnect():
 
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return redirect(url_for('showtodos'))
     else:
         # For whatever reason, the given token was invalid.
         response = make_response(
@@ -322,7 +322,10 @@ def edittodo(todo_id):
     if request.method == 'POST':
         if request.form['title']:
             editedtodo.title = request.form['title']
-            editedtodo.completed = request.form['completed']
+            if(request.form['completed'] == 'True'):
+                editedtodo.completed = True
+            else:
+                editedtodo.completed = False
             flash('todo Successfully Edited %s' % editedtodo.title)
             return redirect(url_for('showtodos'))
     else:
