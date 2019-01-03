@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from flask import Flask, render_template
+from flask import request, redirect, jsonify, url_for, flash
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, ToDoItem, User
@@ -31,7 +32,8 @@ session = DBSession()
 @app.route('/login')
 def showLogin():
     state = ''.join(
-        random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+        random.choice(string.ascii_uppercase + string.digits)
+        for x in range(32))
     login_session['state'] = state
     # return "The current session state is %s" % login_session['state']
     return render_template('login.html', STATE=state)
@@ -88,8 +90,10 @@ def gconnect():
 
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
-    if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
+    if (stored_access_token is not None and
+       gplus_id == stored_gplus_id):
+        response = make_response(json.dumps('''Current user is
+        already connected.'''),
                                  200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -121,7 +125,8 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ''' " style = "width: 300px; height: 300px;border-radius: 150px;
+    -webkit-border-radius: 150px;-moz-border-radius: 150px;"> '''
     flash("you are now logged in as %s" % login_session['username'])
     return output
 
@@ -203,7 +208,7 @@ def showtodos():
     if 'username' not in login_session:
         return render_template('index.html')
     else:
-        userId=login_session['user_id']
+        userId = login_session['user_id']
         todos = session.query(ToDoItem).filter_by(userId=userId)
         print(login_session['user_id'])
         return render_template('todos.html', todos=todos)
@@ -217,7 +222,9 @@ def newtodo():
         return redirect('/login')
     if request.method == 'POST':
         newtodo = ToDoItem(
-            title=request.form['title'], userId=login_session['user_id'], completed=False)
+            title=request.form['title'],
+            userId=login_session['user_id'],
+            completed=False)
         session.add(newtodo)
         flash('New todo %s Successfully Created' % newtodo.title)
         session.commit()
@@ -236,11 +243,14 @@ def edittodo(todo_id):
     if 'username' not in login_session:
         return redirect('/login')
     if editedtodo.userId != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to edit this todo. Please create your own todo in order to edit.');}</script><body onload='myFunction()''>"
+        return '''<script>function myFunction()
+        {alert('You are not authorized to edit this todo.
+         Please create your own todo in order to edit.');}
+        </script><body onload='myFunction()''>'''
     if request.method == 'POST':
         if request.form['title']:
             editedtodo.title = request.form['title']
-            editedtodo.completed=request.form['completed']
+            editedtodo.completed = request.form['completed']
             flash('todo Successfully Edited %s' % editedtodo.title)
             return redirect(url_for('showtodos'))
     else:
@@ -255,7 +265,10 @@ def deletetodo(todo_id):
     if 'username' not in login_session:
         return redirect('/login')
     if todoToDelete.userId != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to delete this todo. Please create your own todo in order to delete.');}</script><body onload='myFunction()''>"
+        return '''<script>function myFunction()
+         {alert('You are not authorized to delete this todo.
+         Please create your own todo in order to delete.');}
+         </script><body onload='myFunction()''>'''
     if request.method == 'POST':
         session.delete(todoToDelete)
         flash('%s Successfully Deleted' % todoToDelete.title)
@@ -263,7 +276,6 @@ def deletetodo(todo_id):
         return redirect(url_for('showtodos', todo_id=todo_id))
     else:
         return render_template('deleteTodo.html', todo=todoToDelete)
-
 
 
 if __name__ == '__main__':
