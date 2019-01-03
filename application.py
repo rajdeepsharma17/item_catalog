@@ -28,9 +28,13 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-# Create anti-forgery state token
 @app.route('/login')
 def showLogin():
+    """
+    This method creates anti-forgery state token.
+    Returns:
+        HTML Template
+    """
     state = ''.join(
         random.choice(string.ascii_uppercase + string.digits)
         for x in range(32))
@@ -41,6 +45,13 @@ def showLogin():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """
+    This method authenticates the user using
+    googleplus OAuth and validates against anti-
+    forgery token.
+    Returns:
+        HTML Template
+    """
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -134,6 +145,14 @@ def gconnect():
 
 
 def createUser(login_session):
+    """
+    This method creates a new user into
+    the database.
+    Args:
+        login_session: contains user info
+    Returns:
+        user id
+    """
     newUser = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
     session.add(newUser)
@@ -143,11 +162,27 @@ def createUser(login_session):
 
 
 def getUserInfo(user_id):
+    """
+    This method fetches user info from
+    database against given user id.
+    Args:
+        user_id: Id of User
+    Returns:
+        User
+    """
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
 
 def getUserID(email):
+    """
+    This method return user info from databse
+    against given email.
+    Args:
+        email: Email Id
+    Returns:
+        user id
+    """
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
@@ -159,7 +194,11 @@ def getUserID(email):
 
 @app.route('/gdisconnect')
 def gdisconnect():
-        # Only disconnect a connected user.
+    """
+    This method disconnects a connected user.
+    Returns:
+        response
+    """
     access_token = login_session.get('access_token')
     if access_token is None:
         response = make_response(
@@ -191,12 +230,26 @@ def gdisconnect():
 # JSON APIs to view todo Information
 @app.route('/todo/<int:todo_id>/JSON')
 def todoMenuJSON(todo_id):
+    """
+    JSON API to return todo against given
+    todo id (Only for development purpose).
+    Args:
+        todo_id: Id of required Todo
+    Returns:
+        JSON
+    """
     todo = session.query(ToDoItem).filter_by(id=todo_id).one()
     return jsonify(ToDo=todo.serialize)
 
 
 @app.route('/todo/JSON')
 def todosJSON():
+    """
+    JSON API to return all todos in
+    databse. (Only for development purpose).
+    Returns:
+        JSON
+    """
     todos = session.query(ToDoItem).all()
     return jsonify(Todos=[r.serialize for r in todos])
 
@@ -205,6 +258,12 @@ def todosJSON():
 @app.route('/')
 @app.route('/todo/')
 def showtodos():
+    """
+    If the user is authenticated shows all
+    todos returrn Index Page otherwise.
+    Returns:
+        HTML Template
+    """
     if 'username' not in login_session:
         return render_template('index.html')
     else:
@@ -218,6 +277,11 @@ def showtodos():
 
 @app.route('/todo/new/', methods=['GET', 'POST'])
 def newtodo():
+    """
+    Allows User to create new Todos.
+    Returns:
+        HTML Template
+    """
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
@@ -238,6 +302,14 @@ def newtodo():
 
 @app.route('/todo/<int:todo_id>/edit/', methods=['GET', 'POST'])
 def edittodo(todo_id):
+    """
+    Allows User to edit an existing
+    Todo.
+    Args:
+        todo_id: Id of Todo to edit
+    Returns:
+        HTML Template
+    """
     editedtodo = session.query(
         ToDoItem).filter_by(id=todo_id).one()
     if 'username' not in login_session:
@@ -260,6 +332,14 @@ def edittodo(todo_id):
 # Delete a todo
 @app.route('/todo/<int:todo_id>/delete/', methods=['GET', 'POST'])
 def deletetodo(todo_id):
+    """
+    Allows User to delete an existing
+    Todo.
+    Args:
+        todo_id: Id of Todo to edit
+    Returns:
+        HTML Template
+    """
     todoToDelete = session.query(
         ToDoItem).filter_by(id=todo_id).one()
     if 'username' not in login_session:
